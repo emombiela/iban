@@ -1,0 +1,20 @@
+{
+    "name": "emombiela/iban",
+    "description": "",
+    "authors": [
+        {
+            "name": "Eduard Mombiela",
+            "email": "mombiela.eduard@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.4.0",
+        "illuminate/support": "4.2.*"
+    },
+    "autoload": {
+        "psr-0": {
+            "Emombiela\\Iban": "src/"
+        }
+    },
+    "minimum-stability": "stable"
+}
