@@ -19,8 +19,20 @@ class Country
      */
 
     static $countries = array(
+        'NL' => array(
+            'countryName'                  => 'The Netherlands',
+            'countryCode'                  => 'NL',
+            'bbanStructure'                => '4!a10!n',
+            'bbanLength'                   => 14,
+            'bbanBankIdentifierPosition'   => array ('first' => 1, 'positions' => 4),
+            'bbanBranchIdentifierPosition' => null,
+            'ibanStructure'                => 'NL2!n4!a10!n',
+            'ibanLength'                   => 18,
+            'sepaCountry'                  => true,
+        ),
         'ES' => array(
             'countryName'                  => 'Spain',
+            'countryCode'                  => 'ES',
             'bbanStructure'                => '4!n4!n1!n1!n10!n',
             'bbanLength'                   => 20,
             'bbanBankIdentifierPosition'   => array ('first' => 1, 'positions' => 4),
@@ -31,7 +43,14 @@ class Country
         ),
     );
 
-    static function countries() {
+    /**
+     * Returns an array with the names of the countries
+     * where the key of each element is the country code defined in ISO 3166.
+     *
+     * @return array
+     */
+    static function countries()
+    {
         $countriesList = array();
 
         foreach (Country::$countries as $countryKey => $countryData) {
@@ -39,5 +58,35 @@ class Country
         }
 
         return $countriesList;
+    }
+
+    /**
+     * Returns an array with the names of the SEPA countries
+     * where the key of each element is the country code defined in ISO 3166.
+     *
+     * @return array
+     */
+    static function sepaCountries()
+    {
+        $countriesList = array();
+
+        foreach (Country::$countries as $countryKey => $countryData) {
+            if ($countryData['sepaCountry']) {
+                $countriesList = array_add($countriesList, $countryKey, $countryData['countryName']);
+            }
+        }
+
+        return $countriesList;
+    }
+
+    /**
+     * Returns an array with the structure of a given country.
+     *
+     * @param  string $sountryCode
+     * @return array
+     */
+    static function getCountry($countryCode)
+    {
+        return array_get(Country::$countries,$countryCode);
     }
 }

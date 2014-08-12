@@ -1,10 +1,12 @@
-<?php namespace Emombiela\Iban;
+<?php
+
+namespace Emombiela\Iban;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Foundation\AliasLoader;
 
-class IbanServiceProvider extends ServiceProvider {
-
+class IbanServiceProvider extends ServiceProvider
+{
 	/**
 	 * Indicates if loading of the provider is deferred.
 	 *
@@ -17,7 +19,10 @@ class IbanServiceProvider extends ServiceProvider {
 	 *
 	 * @return void
 	 */
-	public function register() {}
+    public function register()
+    {
+        //
+    }
 
 	/**
 	 * Get the services provided by the provider.
@@ -38,5 +43,4 @@ class IbanServiceProvider extends ServiceProvider {
 
         AliasLoader::getInstance()->alias('Iban', 'Emombiela\Iban\Iban');
     }
-
 }
