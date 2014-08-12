@@ -41,13 +41,13 @@ class Iban
         $error = null;
 
         if (!is_string($iban)) {
-            $error = 'BAD_IBAN_CODE_TYPE';
+            return $error = 'BAD_IBAN_CODE_TYPE';
         }
 
         $iban = strtoupper($iban);
 
         if (strlen($iban) < 2) {
-            $error = 'INCORRECT_IBAN_LENGTH';
+            return $error = 'INCORRECT_IBAN_LENGTH';
         }
 
         if (
@@ -56,11 +56,18 @@ class Iban
             || ord(substr($iban,1,1)) < 65
             || ord(substr($iban,1,1)) > 90
         ) {
-            $error = 'INCORRECT_IBAN_COUNTRY_CODE';
+            return $error = 'INCORRECT_IBAN_COUNTRY_CODE';
         }
 
         if (is_null($country = Data\Country::getCountry(substr($iban,0,2)))) {
-            $error = 'THERE_IS_NO_COUNTRY_CODE';
+            return $error = 'THERE_IS_NO_COUNTRY_CODE';
+        }
+
+        if (
+               strlen($iban) < $country['ibanLength'] 
+            || strlen($iban) > $country['ibanLength']
+        ) {
+            return $error = 'INCORRECT_IBAN_LENGTH';
         }
 
         return $error;
