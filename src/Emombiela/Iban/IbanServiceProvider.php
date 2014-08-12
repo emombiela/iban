@@ -1,6 +1,7 @@
 <?php namespace Emombiela\Iban;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Foundation\AliasLoader;
 
 class IbanServiceProvider extends ServiceProvider {
 
@@ -16,10 +17,7 @@ class IbanServiceProvider extends ServiceProvider {
 	 *
 	 * @return void
 	 */
-	public function register()
-	{
-		//
-	}
+	public function register() {}
 
 	/**
 	 * Get the services provided by the provider.
@@ -30,5 +28,15 @@ class IbanServiceProvider extends ServiceProvider {
 	{
 		return array();
 	}
+
+    /**
+     * Passing custom namespace to package method.
+     */
+    public function boot()
+    {
+        $this->package('emombiela/iban','iban');
+
+        AliasLoader::getInstance()->alias('Iban', 'Emombiela\Iban\Iban');
+    }
 
 }
