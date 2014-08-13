@@ -5,6 +5,14 @@ require_once('Data/Country.php');
 
 class Iban
 {
+    private static $error = array(
+        'THERE_IS_NO_COUNTRY_CODE',
+        'BAD_IBAN_CODE_TYPE',
+        'BAD_IBAN_LENGTH',
+        'BAD_IBAN_COUNTRY_CODE',
+        'BAD_IBAN_STRUCTURE',
+    );
+
     /**
      * Returns an array with the names of the countries
      * where the key of each element is the country code defined in ISO 3166.
@@ -38,39 +46,75 @@ class Iban
      */
     static function validate($iban)
     {
-        $error = null;
-
         if (!is_string($iban)) {
-            return $error = 'BAD_IBAN_CODE_TYPE';
+            return Iban::$error[1];
         }
 
         $iban = strtoupper($iban);
 
         if (strlen($iban) < 2) {
-            return $error = 'INCORRECT_IBAN_LENGTH';
-        }
-
-        if (
-               ord(substr($iban,0,1)) < 65 
-            || ord(substr($iban,0,1)) > 90
-            || ord(substr($iban,1,1)) < 65
-            || ord(substr($iban,1,1)) > 90
+            return Iban::$error[2];
+        } else if (   ord(substr($iban,0,1)) < 65 
+                   || ord(substr($iban,0,1)) > 90
+                   || ord(substr($iban,1,1)) < 65
+                   || ord(substr($iban,1,1)) > 90
         ) {
-            return $error = 'INCORRECT_IBAN_COUNTRY_CODE';
+            return Iban::$error[3];
         }
 
         if (is_null($country = Data\Country::getCountry(substr($iban,0,2)))) {
-            return $error = 'THERE_IS_NO_COUNTRY_CODE';
+            return Iban::$error[0];
         }
 
-        if (
-               strlen($iban) < $country['ibanLength'] 
-            || strlen($iban) > $country['ibanLength']
-        ) {
-            return $error = 'INCORRECT_IBAN_LENGTH';
+        if (strlen($iban) < $country['ibanLength'] || strlen($iban) > $country['ibanLength']) {
+            return Iban::$error[2];
         }
 
-        return $error;
+        if (!Iban::validateStructure($country['ibanStructure'], $iban)) {
+            return Iban::$error[4];
+        }
+
+        return null;
+    }
+
+    /**
+     * Validate IBAN structure.
+     *
+     * @param  string  $structure
+     * @param  string  $iban
+     * @return boolean
+     */
+    static function validateStructure($structure, $iban)
+    {
+        $substructure = array(
+            'length'      => 0,
+            'fixedLength' => false,
+            'kind'        => null,
+            'isCompleted' => false,
+        );
+
+        $i = 2;
+
+        while ($i < strlen($structure)):
+            if (is_numeric($structure[$i])) {
+                if ($substructure['length'] == 0) {
+                    $substructure['length'] = $structure[$i];
+                } else {
+                    $substructure['length'] .= $structure[$i];
+                }
+            } else if ($structure[$i] == '!') {
+                $substructure['fixedLength'] = true;
+            } else {
+                $substructure['kind'] = $structure[$i];
+                $substructure['isCompleted'] = true;
+            }
+            if ($substructure['isCompleted']) {
+                dd($substructure);
+            }
+            $i++;
+        endwhile;
+
+        return true;
     }
 
     static function calculate($iban)
