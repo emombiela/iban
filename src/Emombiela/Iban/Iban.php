@@ -5,6 +5,9 @@ require_once('Data/Country.php');
 
 class Iban
 {
+    /**
+     * IBAN code errors list.
+     */
     private static $error = array(
         'THERE_IS_NO_COUNTRY_CODE',
         'BAD_IBAN_CODE_TYPE',
@@ -46,12 +49,15 @@ class Iban
      */
     static function validate($iban)
     {
+        /** Checks whether the function receives a string. */
         if (!is_string($iban)) {
             return Iban::$error[1];
         }
 
+        /** Converts uppercase. */
         $iban = strtoupper($iban);
 
+        /** Checks if the first two positions of the string are letters. */
         if (strlen($iban) < 2) {
             return Iban::$error[2];
         } else if (   ord(substr($iban,0,1)) < 65 
@@ -62,14 +68,17 @@ class Iban
             return Iban::$error[3];
         }
 
+        /** Checks if the country exists in the database. */
         if (is_null($country = Data\Country::getCountry(substr($iban,0,2)))) {
             return Iban::$error[0];
         }
 
+        /** Checks if the length of the code provided corresponds to the country indicated. */
         if (strlen($iban) < $country['ibanLength'] || strlen($iban) > $country['ibanLength']) {
             return Iban::$error[2];
         }
 
+        /** Check the structure of IBAN. */
         if (!Iban::validateStructure($country['ibanStructure'], $iban)) {
             return Iban::$error[4];
         }
@@ -86,6 +95,11 @@ class Iban
      */
     static function validateStructure($structure, $iban)
     {
+        /**
+         * Each structure of an IBAN code consists in smaller substructures
+         * that define the format of this and follow the conventions shown
+         * in Country class.
+         */
         $substructure = array(
             'length'      => 0,
             'fixedLength' => false,
@@ -94,6 +108,7 @@ class Iban
         );
 
         $i = 2;
+        $j = 2;
 
         while ($i < strlen($structure)):
             if (is_numeric($structure[$i])) {
@@ -108,9 +123,47 @@ class Iban
                 $substructure['kind'] = $structure[$i];
                 $substructure['isCompleted'] = true;
             }
+
             if ($substructure['isCompleted']) {
-                dd($substructure);
+                $substructureData = substr($iban,$j,$substructure['length']);
+
+                if ($substructure['kind'] == 'n') {
+                    if (!is_numeric($substructureData)) {
+                        return false;
+                    } else {
+                        $j += strlen($substructureData);
+                    }
+                } else if ($substructure['kind'] == 'a') {
+                    $k = 0;
+                    while ($k < strlen($substructureData)):
+                        if (   ord(substr($substructureData,$k,1)) < 65 
+                            || ord(substr($substructureData,$k,1)) > 90
+                        ) {
+                            return false;
+                        } else {
+                            $k++;
+                            $j++;
+                        }
+                    endwhile;
+                } else {
+                    $k = 0;
+                    while ($k < strlen($substructureData)):
+                        if (substr($substructureData,$k,1) != ' ') {
+                            return false;
+                        } else {
+                            $k++;
+                            $j++;
+                        }
+                    endwhile;
+                }
+                
+                /** Reset $substructure */
+                $substructure['length']      = 0;
+                $substructure['fixedLength'] = false;
+                $substructure['kind']        = null;
+                $substructure['isCompleted'] = false;
             }
+
             $i++;
         endwhile;
 

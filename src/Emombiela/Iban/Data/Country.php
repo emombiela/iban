@@ -3,21 +3,21 @@
 class Country 
 {
     /**
-     * Conventions for this DataBase:
+     * Conventions for countries DataBase:
+     * ===================================
      *
-     * The following character representations are used in this database:
+     * **The following character representations are used in this database:**
      *
      * n Digits (numeric characters 0 to 9 only)
      * a Upper case letters (alphabetic characters A-Z only)
      * c upper and lower case alphanumeric characters (A-Z, a-z and 0-9)
      * e blank space
      *
-     * The following length indications are used in this database:
+     * **The following length indications are used in this database:**
      *
      * nn! fixed length
-     * nn maximum length
+     * nn  maximum length
      */
-
     static $countries = array(
         'NL' => array(
             'countryName'                  => 'The Netherlands',
