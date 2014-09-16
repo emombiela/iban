@@ -6,6 +6,38 @@ require_once('Data/Country.php');
 class Iban
 {
     /**
+     * Conversion table from letters to digits to calculate the IBAN code.
+     */
+    private static $lettersConversionTable = array(
+        'A' => 10,
+        'B' => 11,
+        'C' => 12,
+        'D' => 13,
+        'E' => 14,
+        'F' => 15,
+        'G' => 16,
+        'H' => 17,
+        'I' => 18,
+        'J' => 19,
+        'K' => 20,
+        'L' => 21,
+        'M' => 22,
+        'N' => 23,
+        'O' => 24,
+        'P' => 25,
+        'Q' => 26,
+        'R' => 27,
+        'S' => 28,
+        'T' => 29,
+        'U' => 30,
+        'V' => 31,
+        'W' => 32,
+        'X' => 33,
+        'Y' => 34,
+        'Z' => 35,
+    );
+
+    /**
      * IBAN code errors list.
      */
     private static $error = array(
@@ -14,6 +46,7 @@ class Iban
         'BAD_IBAN_LENGTH',
         'BAD_IBAN_COUNTRY_CODE',
         'BAD_IBAN_STRUCTURE',
+        'BAD_IBAN_CODE',
     );
 
     /**
@@ -81,6 +114,11 @@ class Iban
         /** Check the structure of IBAN. */
         if (!Iban::validateStructure($country['ibanStructure'], $iban)) {
             return Iban::$error[4];
+        }
+
+        /** Calculate IBAN. */
+        if (!Iban::calculate($iban)) {
+            return Iban::$error[5];
         }
 
         return null;
@@ -170,8 +208,27 @@ class Iban
         return true;
     }
 
+    /**
+     * Calculate IBAN code.
+     *
+     * @param  string  $iban
+     * @return boolean
+     */
     static function calculate($iban)
     {
-        //
+        $ibanArray = str_split($iban);
+
+        for ($i = 0; $i < 4; $i++) {
+            array_push($ibanArray,array_shift($ibanArray));
+        }
+
+        foreach ($ibanArray as $ibanElement) {
+            if (!is_numeric($ibanElement)) {
+            }
+        }
+
+        dd($ibanArray);
+
+        return true;
     }
 }
