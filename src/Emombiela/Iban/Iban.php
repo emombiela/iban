@@ -72,7 +72,7 @@ class Iban
         $countries = Data\Country::sepaCountries();
         return $countries;
     }
-    
+
     /**
      * Returns a string with the validation error.
      * If the string is null the IBAN code is correct.
@@ -194,8 +194,8 @@ class Iban
                         }
                     endwhile;
                 }
-                
                 /** Reset $substructure */
+
                 $substructure['length']      = 0;
                 $substructure['fixedLength'] = false;
                 $substructure['kind']        = null;
@@ -222,12 +222,28 @@ class Iban
             array_push($ibanArray,array_shift($ibanArray));
         }
 
+        $i = 0;
         foreach ($ibanArray as $ibanElement) {
             if (!is_numeric($ibanElement)) {
+                $ibanArray[$i] = Iban::$lettersConversionTable[$ibanElement];
             }
+
+            $i++;
         }
 
-        dd($ibanArray);
+        $iban           = implode($ibanArray);
+        $ibanLength     = strlen($iban);
+        $firstIbanSlice = false;
+
+        while ($ibanLength != 0):
+            if (!$firstIbanSlice) {
+                if ($ibanLength >= 9) {
+                    $ibanLength = $ibanLength - 9;
+                }
+            }
+        endwhile;
+
+        dd($ibanLength);
 
         return true;
     }
