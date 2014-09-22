@@ -46,7 +46,7 @@ class Iban
         'BAD_IBAN_LENGTH',
         'BAD_IBAN_COUNTRY_CODE',
         'BAD_IBAN_STRUCTURE',
-        'BAD_IBAN_CODE',
+        'BAD_IBAN_CHECK_DIGITS_TEST',
     );
 
     /**
@@ -111,13 +111,13 @@ class Iban
             return Iban::$error[2];
         }
 
-        /** Check the structure of IBAN. */
+        /** Check IBAN structure. */
         if (!Iban::validateStructure($country['ibanStructure'], $iban)) {
             return Iban::$error[4];
         }
 
-        /** Calculate IBAN. */
-        if (!Iban::calculate($iban)) {
+        /** IBAN check digits test*/
+        if (Iban::checkDigits($iban) != 1) {
             return Iban::$error[5];
         }
 
@@ -209,12 +209,12 @@ class Iban
     }
 
     /**
-     * Calculate IBAN code.
+     * Calculate IBAN check digits.
      *
      * @param  string  $iban
-     * @return boolean
+     * @return integer $ibanControlCode
      */
-    static function calculate($iban)
+    static function checkDigits($iban)
     {
         $ibanArray = str_split($iban);
 
@@ -231,20 +231,41 @@ class Iban
             $i++;
         }
 
-        $iban           = implode($ibanArray);
-        $ibanLength     = strlen($iban);
-        $firstIbanSlice = false;
+        $iban            = implode($ibanArray);
+        $ibanSlice       = null;
+        $ibanSliceIndex  = 0;
+        $ibanControlCode = 0;
+        $modulus         = 97;
+        $ibanLength      = strlen($iban);
+        $firstIbanSlice  = false;
 
         while ($ibanLength != 0):
             if (!$firstIbanSlice) {
                 if ($ibanLength >= 9) {
-                    $ibanLength = $ibanLength - 9;
+                    $ibanSlice       = substr($iban, $ibanSliceIndex, 9);
+                    $ibanControlCode = $ibanSlice % $modulus;
+                    $ibanSliceIndex  = $ibanSliceIndex + 9;
+                    $ibanLength      = $ibanLength - 9;
+                } else {
+                    $ibanSlice       = $iban;
+                    $ibanControlCode = $ibanSlice % $modulus;
+                    $ibanLength      = 0;
+                }
+                $firstIbanSlice = true;
+            } else {
+                if ($ibanLength >= 7) {
+                    $ibanSlice       = $ibanControlCode.substr($iban, $ibanSliceIndex, 7);
+                    $ibanControlCode = $ibanSlice % $modulus;
+                    $ibanSliceIndex  = $ibanSliceIndex + 7;
+                    $ibanLength      = $ibanLength - 7;
+                } else {
+                    $ibanSlice       = $ibanControlCode.substr($iban, $ibanSliceIndex, $ibanLength);
+                    $ibanControlCode = $ibanSlice % $modulus;
+                    $ibanLength      = 0;
                 }
             }
         endwhile;
 
-        dd($ibanLength);
-
-        return true;
+        return $ibanControlCode;
     }
 }
