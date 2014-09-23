@@ -194,8 +194,8 @@ class Iban
                         }
                     endwhile;
                 }
-                /** Reset $substructure */
 
+                /** Reset $substructure */
                 $substructure['length']      = 0;
                 $substructure['fixedLength'] = false;
                 $substructure['kind']        = null;
@@ -218,10 +218,12 @@ class Iban
     {
         $ibanArray = str_split($iban);
 
+        /** Move the four initial characters to the end of the string. */
         for ($i = 0; $i < 4; $i++) {
             array_push($ibanArray,array_shift($ibanArray));
         }
 
+        /** Replace the letters in the string with digits. */
         $i = 0;
         foreach ($ibanArray as $ibanElement) {
             if (!is_numeric($ibanElement)) {
@@ -232,12 +234,22 @@ class Iban
         }
 
         $iban            = implode($ibanArray);
-        $ibanSlice       = null;
-        $ibanSliceIndex  = 0;
-        $ibanControlCode = 0;
-        $modulus         = 97;
-        $ibanLength      = strlen($iban);
-        $firstIbanSlice  = false;
+
+        /** Calculate */
+        $ibanSlice       = null;          /** Portion of the code to calculate the modulus.            */
+        $ibanSliceIndex  = 0;             /** Position of the next portion to calculate.               */
+        $ibanControlCode = 0;             /** Result of calculation.                                   */
+        $modulus         = 97;            /** Modulus.                                                 */
+        $ibanLength      = strlen($iban); /** Code length calculation pending.                         */
+        $firstIbanSlice  = false;         /** True if modulus has been calculated on the first portion */
+
+        /** Ignore leading zeroes. */
+        $i = 0;
+        while ($iban[$i] == 0):
+            $ibanSliceIndex++;
+            $ibanLength--;
+            $i++;
+        endwhile;
 
         while ($ibanLength != 0):
             if (!$firstIbanSlice) {
