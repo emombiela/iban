@@ -1,12 +1,12 @@
 <?php
-/*
+/**
  * @author  Eduard Mombiela <mombiela.eduard@gmail.com>
  * @version GIT: $Id$
  */
 
 namespace Emombiela\Iban;
 
-require_once('Data/Country.php');
+require_once('Data/DataHandler.php');
 require_once('BbanCheckDigit.php');
 
 class Iban
@@ -15,32 +15,13 @@ class Iban
      * Conversion table from letters to digits to calculate the IBAN code.
      */
     private static $lettersConversionTable = array(
-        'A' => 10,
-        'B' => 11,
-        'C' => 12,
-        'D' => 13,
-        'E' => 14,
-        'F' => 15,
-        'G' => 16,
-        'H' => 17,
-        'I' => 18,
-        'J' => 19,
-        'K' => 20,
-        'L' => 21,
-        'M' => 22,
-        'N' => 23,
-        'O' => 24,
-        'P' => 25,
-        'Q' => 26,
-        'R' => 27,
-        'S' => 28,
-        'T' => 29,
-        'U' => 30,
-        'V' => 31,
-        'W' => 32,
-        'X' => 33,
-        'Y' => 34,
-        'Z' => 35,
+        'A' => 10, 'B' => 11, 'C' => 12, 'D' => 13,
+        'E' => 14, 'F' => 15, 'G' => 16, 'H' => 17,
+        'I' => 18, 'J' => 19, 'K' => 20, 'L' => 21,
+        'M' => 22, 'N' => 23, 'O' => 24, 'P' => 25,
+        'Q' => 26, 'R' => 27, 'S' => 28, 'T' => 29,
+        'U' => 30, 'V' => 31, 'W' => 32, 'X' => 33,
+        'Y' => 34, 'Z' => 35,
     );
 
     /**
@@ -68,7 +49,7 @@ class Iban
      */
     static function countriesList()
     {
-        $countries = Data\Country::countries();
+        $countries = countries();
         return $countries;
     }
 
@@ -80,7 +61,7 @@ class Iban
      */
     static function sepaCountriesList()
     {
-        $countries = Data\Country::sepaCountries();
+        $countries = sepaCountries();
         return $countries;
     }
 
@@ -113,7 +94,7 @@ class Iban
         }
 
         /** Checks if the country exists in the database. */
-        if (is_null($country = Data\Country::getCountry(substr($iban,0,2)))) {
+        if (is_null($country = getCountry(substr($iban,0,2)))) {
             return Iban::$error[0];
         }
 
@@ -123,7 +104,7 @@ class Iban
         }
 
         /** Checks IBAN structure. */
-        if (!Iban::validateStructure($country['ibanStructure'], $iban)) {
+        if (!Iban::validateStructure($country['ibanStructure'], $iban, 2)) {
             return Iban::$error[4];
         }
 
@@ -151,7 +132,7 @@ class Iban
         }
 
         /** Checks if the country exists in the database. */
-        if (is_null($countryData = Data\Country::getCountry($country))) {
+        if (is_null($countryData = getCountry($country))) {
             return array(Iban::$error[0], null);
         }
 
@@ -169,7 +150,7 @@ class Iban
         }
 
         /** Checks BBAN structure. */
-        if (!Iban::validateBbanStructure($countryData['bbanStructure'], $bban)) {
+        if (!Iban::validateStructure($countryData['bbanStructure'], $bban, 0)) {
             return array(Iban::$error[9], null);
         }
 
@@ -192,11 +173,12 @@ class Iban
     /**
      * Validate IBAN structure.
      *
-     * @param  string  $structure
-     * @param  string  $iban
+     * @param  string  $structure pattern structure
+     * @param  string  $code      code to parse
+     * @param  int     $start     code position to start parsing
      * @return boolean
      */
-    static function validateStructure($structure, $iban)
+    static function validateStructure($structure, $code, $start)
     {
         /**
          * Each structure of an IBAN code consists in smaller substructures
@@ -210,8 +192,8 @@ class Iban
             'isCompleted' => false,
         );
 
-        $i = 2;
-        $j = 2;
+        $i = $start;
+        $j = $start;
 
         while ($i < strlen($structure)):
             if (is_numeric($structure[$i])) {
@@ -228,7 +210,7 @@ class Iban
             }
 
             if ($substructure['isCompleted']) {
-                $substructureData = substr($iban,$j,$substructure['length']);
+                $substructureData = substr($code,$j,$substructure['length']);
 
                 if ($substructure['kind'] == 'n') {
                     if (!is_numeric($substructureData)) {
@@ -344,90 +326,6 @@ class Iban
         endwhile;
 
         return $ibanControlCode;
-    }
-
-    /**
-     * Validate BBAN structure.
-     *
-     * @param  string  $structure
-     * @param  string  $bban
-     * @return boolean
-     */
-    static function validateBbanStructure($structure, $bban)
-    {
-        /**
-         * Each structure of an BBAN code consists in smaller substructures
-         * that define the format of this and follow the conventions shown
-         * in Country class.
-         */
-        $substructure = array(
-            'length'      => 0,
-            'fixedLength' => false,
-            'kind'        => null,
-            'isCompleted' => false,
-        );
-
-        $i = 0;
-        $j = 0;
-
-        while ($i < strlen($structure)):
-            if (is_numeric($structure[$i])) {
-                if ($substructure['length'] == 0) {
-                    $substructure['length']  = $structure[$i];
-                } else {
-                    $substructure['length'] .= $structure[$i];
-                }
-            } else if ($structure[$i] == '!') {
-                $substructure['fixedLength'] = true;
-            } else {
-                $substructure['kind']        = $structure[$i];
-                $substructure['isCompleted'] = true;
-            }
-
-            if ($substructure['isCompleted']) {
-                $substructureData = substr($bban,$j,$substructure['length']);
-
-                if ($substructure['kind'] == 'n') {
-                    if (!is_numeric($substructureData)) {
-                        return false;
-                    } else {
-                        $j += strlen($substructureData);
-                    }
-                } else if ($substructure['kind'] == 'a') {
-                    $k = 0;
-                    while ($k < strlen($substructureData)):
-                        if (   ord(substr($substructureData,$k,1)) < 65 
-                            || ord(substr($substructureData,$k,1)) > 90
-                        ) {
-                            return false;
-                        } else {
-                            $k++;
-                            $j++;
-                        }
-                    endwhile;
-                } else {
-                    $k = 0;
-                    while ($k < strlen($substructureData)):
-                        if (substr($substructureData,$k,1) != ' ') {
-                            return false;
-                        } else {
-                            $k++;
-                            $j++;
-                        }
-                    endwhile;
-                }
-
-                /** Reset $substructure */
-                $substructure['length']      = 0;
-                $substructure['fixedLength'] = false;
-                $substructure['kind']        = null;
-                $substructure['isCompleted'] = false;
-            }
-
-            $i++;
-        endwhile;
-
-        return true;
     }
 }
 
