@@ -1,7 +1,13 @@
 <?php
+/*
+ * @author  Eduard Mombiela <mombiela.eduard@gmail.com>
+ * @version GIT: $Id$
+ */
+
 namespace Emombiela\Iban;
 
 require_once('Data/Country.php');
+require_once('BbanCheckDigit.php');
 
 class Iban
 {
@@ -159,12 +165,18 @@ class Iban
 
         /** Checks if the length of the code provided corresponds to the country indicated. */
         if (strlen($bban) != $countryData['bbanLength']) {
-            return Iban::$error[8];
+            return array(Iban::$error[8], null);
         }
 
         /** Checks BBAN structure. */
         if (!Iban::validateBbanStructure($countryData['bbanStructure'], $bban)) {
             return array(Iban::$error[9], null);
+        }
+
+        /** BBAN check digits test. */
+        $bbanCDTResult = bbanCheckDigitTest($country, $bban);
+        if (!$bbanCDTResult[0]) {
+            return array(Iban::$error[10], null);
         }
 
         /** Calculate IBAN code. */
@@ -341,7 +353,7 @@ class Iban
      * @param  string  $bban
      * @return boolean
      */
-    static function validateStructure($structure, $bban)
+    static function validateBbanStructure($structure, $bban)
     {
         /**
          * Each structure of an BBAN code consists in smaller substructures
@@ -355,8 +367,8 @@ class Iban
             'isCompleted' => false,
         );
 
-        $i = 2;
-        $j = 2;
+        $i = 0;
+        $j = 0;
 
         while ($i < strlen($structure)):
             if (is_numeric($structure[$i])) {

@@ -1,4 +1,8 @@
 <?php
+/* 
+ * @author  Eduard Mombiela <mombiela.eduard@gmail.com>
+ * @version GIT: $Id$
+ */
 
 namespace Emombiela\Iban;
 

@@ -2,6 +2,11 @@
 
 class Country 
 {
+    /*
+     * @author  Eduard Mombiela <mombiela.eduard@gmail.com>
+     * @version GIT: $Id$
+     */
+
     /**
      * Conventions for countries DataBase:
      * ===================================
@@ -17,6 +22,8 @@ class Country
      *
      * nn! fixed length
      * nn  maximum length
+     *
+     * @see http://www.ecbs.org/iban.htm
      */
     static $countries = array(
         'NL' => array(
