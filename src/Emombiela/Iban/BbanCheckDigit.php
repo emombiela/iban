@@ -17,6 +17,7 @@ function bbanCheckDigitTest($country, $bban)
 
     switch ($country) {
     case "ES":
+
         return array(false, $bbanCheckDigit);
 
     default:
