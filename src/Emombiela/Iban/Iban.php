@@ -2,6 +2,7 @@
 /**
  * @author  Eduard Mombiela <mombiela.eduard@gmail.com>
  * @version GIT: $Id$
+ * @see     http://en.wikipedia.org/wiki/International_Bank_Account_Number
  */
 
 namespace Emombiela\Iban;
@@ -156,8 +157,11 @@ class Iban
 
         /** BBAN check digits test. */
         $bbanCDTResult = bbanCheckDigitTest($country, $bban);
-        if (!$bbanCDTResult[0]) {
-            return array(Iban::$error[10], null);
+        if ($bbanCDTResult[0]) {
+
+            if (!$bbanCDTResult[1]) {
+                return array(Iban::$error[10], null);
+            }
         }
 
         /** Calculate IBAN code. */
@@ -175,7 +179,7 @@ class Iban
      *
      * @param  string  $structure pattern structure
      * @param  string  $code      code to parse
-     * @param  int     $start     code position to start parsing
+     * @param  integer $start     code position to start parsing
      * @return boolean
      */
     static function validateStructure($structure, $code, $start)
