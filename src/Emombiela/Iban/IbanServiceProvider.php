@@ -1,5 +1,7 @@
 <?php
 /**
+ * Bootstrap classes for Iban package.
+ *
  * @author  Eduard Mombiela <mombiela.eduard@gmail.com>
  * @version GIT: $Id$
  */
@@ -9,6 +11,9 @@ namespace Emombiela\Iban;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Foundation\AliasLoader;
 
+/**
+ * Bootstrap classes for Iban package.
+ */
 class IbanServiceProvider extends ServiceProvider
 {
     /**
@@ -39,7 +44,7 @@ class IbanServiceProvider extends ServiceProvider
     }
 
     /**
-     * Passing custom namespace to package method.
+     * Pass custom namespace to package method.
      */
     public function boot()
     {

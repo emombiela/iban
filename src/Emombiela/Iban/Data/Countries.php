@@ -1,6 +1,7 @@
 <?php
-
 /**
+ * Countries database with IBAN and BBAN structures.
+ *
  * @author  Eduard Mombiela <mombiela.eduard@gmail.com>
  * @version GIT: $Id$
  */

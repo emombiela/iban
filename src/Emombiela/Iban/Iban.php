@@ -1,5 +1,7 @@
 <?php
 /**
+ * Validate and calculate IBAN and BBAN codes.
+ *
  * @author  Eduard Mombiela <mombiela.eduard@gmail.com>
  * @version GIT: $Id$
  * @see     http://en.wikipedia.org/wiki/International_Bank_Account_Number
@@ -10,9 +12,14 @@ namespace Emombiela\Iban;
 require_once('Data/DataHandler.php');
 require_once('BbanCheckDigit.php');
 
+/**
+ * Validate and calculate IBAN and BBAN codes.
+ */
 class Iban
 {
     /**
+     * Letters conversion table.
+     *
      * Conversion table from letters to digits to calculate the IBAN code.
      */
     private static $lettersConversionTable = array(
@@ -43,8 +50,10 @@ class Iban
     );
 
     /**
-     * Returns an array with the names of the countries
-     * where the key of each element is the country code defined in ISO 3166.
+     * Countries list.
+     *
+     * This method returns an array with the names of the countries.
+     * The key of each element is the country code defined in ISO 3166.
      *
      * @return array
      */
@@ -55,8 +64,10 @@ class Iban
     }
 
     /**
-     * Returns an array with the names of the SEPA countries
-     * where the key of each element is the country code defined in ISO 3166.
+     * SEPA countries list.
+     *
+     * This method returns an array with the names of the SEPA countries.
+     * The key of each element is the country code defined in ISO 3166.
      *
      * @return array
      */
@@ -67,11 +78,13 @@ class Iban
     }
 
     /**
+     * Validate IBAN code.
+     *
      * Returns a string with the validation error.
      * If the string retruned is null the IBAN code is correct.
      *
-     * @param  string $iban
-     * @return string
+     * @param  string $iban IBAN code to validate.
+     * @return string       Null or validation error.
      */
     static function validate($iban)
     {
@@ -99,7 +112,7 @@ class Iban
             return Iban::$error[0];
         }
 
-        /** Checks if the length of the code provided corresponds to the country indicated. */
+        /** Checks the length of the code. */
         if (strlen($iban) != $country['ibanLength']) {
             return Iban::$error[2];
         }
@@ -118,12 +131,14 @@ class Iban
     }
 
     /**
-     * Calculate IBAN code from BBAN code and country to which it belongs.
-     * If the array.error returned is null returns the IBAN code else returns null.
+     * Calculate IBAN code.
      *
-     * @param  string $country
-     * @param  string $bban
-     * @return array  (error, iban)
+     * Calculate IBAN code from BBAN code and country to which it belongs.
+     * If the array error returned is null returns the IBAN code else returns null.
+     *
+     * @param  string $country Country of BBAN code.
+     * @param  string $bban    BBAN code.
+     * @return array           (string: error, string: IBAN)
      */
     static function calculate ($country, $bban)
     {
@@ -165,7 +180,7 @@ class Iban
         }
 
         /** Calculate IBAN code. */
-        $checkDigits = 98 - Iban::checkDigits($country.'00'.$bban);
+        $checkDigits = Iban::checkDigits($country.'00'.$bban);
 
         if ($checkDigits < 10) {
             return array(null, $country.'0'.$checkDigits.$bban);
@@ -177,9 +192,9 @@ class Iban
     /**
      * Validate IBAN structure.
      *
-     * @param  string  $structure pattern structure
-     * @param  string  $code      code to parse
-     * @param  integer $start     code position to start parsing
+     * @param  string  $structure Pattern structure.
+     * @param  string  $code      Code to parse.
+     * @param  integer $start     Code position to start parsing.
      * @return boolean
      */
     static function validateStructure($structure, $code, $start)
@@ -262,8 +277,8 @@ class Iban
     /**
      * Calculate IBAN check digits.
      *
-     * @param  string  $iban
-     * @return integer $ibanControlCode
+     * @param  string  $iban IBAN code.
+     * @return integer       IBAN check digits.
      */
     static function checkDigits($iban)
     {
@@ -329,7 +344,7 @@ class Iban
             }
         endwhile;
 
-        return $ibanControlCode;
+        return 98 - $ibanControlCode;
     }
 }
 

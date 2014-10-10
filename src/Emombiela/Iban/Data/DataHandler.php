@@ -1,14 +1,17 @@
 <?php
 /**
+ * Handler database files.
+ *
  * @author  Eduard Mombiela <mombiela.eduard@gmail.com>
  * @version GIT: $Id$
  */
 
+/** */
 require_once('Countries.php');
 
 /**
- * Returns an array with the names of the countries
- * where the key of each element is the country code defined in ISO 3166.
+ * Returns an array with the names of the countries.
+ * The key of each element is the country code defined in ISO 3166.
  *
  * @return array
  */
@@ -24,8 +27,8 @@ function countries()
 }
 
 /**
- * Returns an array with the names of the SEPA countries
- * where the key of each element is the country code defined in ISO 3166.
+ * Returns an array with the names of the SEPA countries.
+ * The key of each element is the country code defined in ISO 3166.
  *
  * @return array
  */
@@ -43,14 +46,13 @@ function sepaCountries()
 }
 
 /**
- * Returns an array with the structure of a given country.
+ * Returns the structure of a country.
  *
- * @param  string $sountryCode
+ * @param  string $countryCode
  * @return array
  */
 function getCountry($countryCode)
 {
-    //global $countries;
     return array_get($GLOBALS['countries'],$countryCode);
 }
 
