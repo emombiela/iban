@@ -26,7 +26,7 @@ function bbanCheckDigitTest($country, $bban)
          *
          * @author  Eduard Mombiela
          * @version GIT: $Id$
-         * @see     http://es.wikipedia.org/wiki/C%C3%B3digo_cuenta_cliente#D.C3.ADgitos_de_control
+         * @link    http://es.wikipedia.org/wiki/C%C3%B3digo_cuenta_cliente#D.C3.ADgitos_de_control
          */
 
         /**

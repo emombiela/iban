@@ -22,7 +22,7 @@
  * nn! fixed length
  * nn  maximum length
  *
- * @see http://www.ecbs.org/iban.htm
+ * @link http://www.ecbs.org/iban.htm
  */
 $GLOBALS['countries'] = array(
     'NL' => array(

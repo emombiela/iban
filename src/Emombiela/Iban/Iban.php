@@ -4,16 +4,26 @@
  *
  * @author  Eduard Mombiela <mombiela.eduard@gmail.com>
  * @version GIT: $Id$
- * @see     http://en.wikipedia.org/wiki/International_Bank_Account_Number
  */
 
 namespace Emombiela\Iban;
 
+/**
+ * Database handler.
+ */
 require_once('Data/DataHandler.php');
+/**
+ * Calculate BBAN check digit/s function.
+ */
 require_once('BbanCheckDigit.php');
 
 /**
  * Validate and calculate IBAN and BBAN codes.
+ *
+ * @author  Eduard Mombiela <mombiela.eduard@gmail.com>
+ * @version GIT: $Id$
+ * @link    http://en.wikipedia.org/wiki/International_Bank_Account_Number
+ * @package Iban
  */
 class Iban
 {
@@ -21,6 +31,8 @@ class Iban
      * Letters conversion table.
      *
      * Conversion table from letters to digits to calculate the IBAN code.
+     *
+     * @var array
      */
     private static $lettersConversionTable = array(
         'A' => 10, 'B' => 11, 'C' => 12, 'D' => 13,
@@ -34,6 +46,8 @@ class Iban
 
     /**
      * IBAN code errors list.
+     *
+     * @var array
      */
     private static $error = array(
         'THERE_IS_NO_COUNTRY_CODE',
@@ -52,7 +66,7 @@ class Iban
     /**
      * Countries list.
      *
-     * This method returns an array with the names of the countries.
+     * This method returns an array with the names of the countries.<br />
      * The key of each element is the country code defined in ISO 3166.
      *
      * @return array
@@ -66,7 +80,7 @@ class Iban
     /**
      * SEPA countries list.
      *
-     * This method returns an array with the names of the SEPA countries.
+     * This method returns an array with the names of the SEPA countries.<br />
      * The key of each element is the country code defined in ISO 3166.
      *
      * @return array
@@ -81,22 +95,22 @@ class Iban
      * Validate IBAN code.
      *
      * Returns a string with the validation error.
-     * If the string retruned is null the IBAN code is correct.
+     * If the string returned is null the IBAN code is correct.
      *
-     * @param  string $iban IBAN code to validate.
-     * @return string       Null or validation error.
+     * @param  string      $iban IBAN code to validate.
+     * @return string|null Validation error.
      */
     static function validate($iban)
     {
-        /** Checks whether the function receives a string. */
+        // Checks whether the function receives a string.
         if (!is_string($iban)) {
             return Iban::$error[1];
         }
 
-        /** Converts uppercase. */
+        // Converts uppercase.
         $iban = strtoupper($iban);
 
-        /** Checks if the first two positions of the string are letters. */
+        // Checks if the first two positions of the string are letters.
         if (strlen($iban) < 2) {
             return Iban::$error[2];
         } else if (   ord(substr($iban,0,1)) < 65 
@@ -107,22 +121,22 @@ class Iban
             return Iban::$error[3];
         }
 
-        /** Checks if the country exists in the database. */
+        // Checks if the country exists in the database.
         if (is_null($country = getCountry(substr($iban,0,2)))) {
             return Iban::$error[0];
         }
 
-        /** Checks the length of the code. */
+        // Checks the length of the code.
         if (strlen($iban) != $country['ibanLength']) {
             return Iban::$error[2];
         }
 
-        /** Checks IBAN structure. */
+        // Checks IBAN structure.
         if (!Iban::validateStructure($country['ibanStructure'], $iban, 2)) {
             return Iban::$error[4];
         }
 
-        /** IBAN check digits test*/
+        // IBAN check digits test.
         if (Iban::checkDigits($iban) != 1) {
             return Iban::$error[5];
         }
@@ -134,43 +148,47 @@ class Iban
      * Calculate IBAN code.
      *
      * Calculate IBAN code from BBAN code and country to which it belongs.
-     * If the array error returned is null returns the IBAN code else returns null.
      *
      * @param  string $country Country of BBAN code.
      * @param  string $bban    BBAN code.
-     * @return array           (string: error, string: IBAN)
+     * @return array  array[0] -> error string<br />array[1] -> IBAN code
+     *                    If is null array[0] then:
+     *                        array[1] = IBAN code
+     *                    else
+     *                        array[0] = error string
+     *                        array[1] = null
      */
     static function calculate ($country, $bban)
     {
-        /** Checks if the function reveives a country string  */
+        // Checks if the function reveives a country string.
         if (!is_string($country)) {
             return array(Iban::$error[6], null);
         }
 
-        /** Checks if the country exists in the database. */
+        // Checks if the country exists in the database.
         if (is_null($countryData = getCountry($country))) {
             return array(Iban::$error[0], null);
         }
 
-       /** Checks if the function receives a bban string. */
+        // Checks if the function receives a bban string.
         if (!is_string($bban)) {
             return array(Iban::$error[7], null);
         }
 
-        /** Converts uppercase. */
+        // Converts uppercase.
         $bban = strtoupper($bban);
 
-        /** Checks if the length of the code provided corresponds to the country indicated. */
+        // Checks if the length of the code provided corresponds to the country indicated.
         if (strlen($bban) != $countryData['bbanLength']) {
             return array(Iban::$error[8], null);
         }
 
-        /** Checks BBAN structure. */
+        // Checks BBAN structure.
         if (!Iban::validateStructure($countryData['bbanStructure'], $bban, 0)) {
             return array(Iban::$error[9], null);
         }
 
-        /** BBAN check digits test. */
+        // BBAN check digits test.
         $bbanCDTResult = bbanCheckDigitTest($country, $bban);
         if ($bbanCDTResult[0]) {
 
@@ -179,7 +197,7 @@ class Iban
             }
         }
 
-        /** Calculate IBAN code. */
+        // Calculate IBAN code.
         $checkDigits = Iban::checkDigits($country.'00'.$bban);
 
         if ($checkDigits < 10) {
@@ -192,19 +210,19 @@ class Iban
     /**
      * Validate IBAN structure.
      *
+     * Each structure of an IBAN code consists in smaller substructures
+     * that define the format of this and follow the conventions shown
+     * in Country class.
+     *
+     *
      * @param  string  $structure Pattern structure.
      * @param  string  $code      Code to parse.
      * @param  integer $start     Code position to start parsing.
-     * @return boolean
+     * @return boolean True if structure is right.
      */
     static function validateStructure($structure, $code, $start)
     {
-        /**
-         * Each structure of an IBAN code consists in smaller substructures
-         * that define the format of this and follow the conventions shown
-         * in Country class.
-         */
-        $substructure = array(
+       $substructure = array(
             'length'      => 0,
             'fixedLength' => false,
             'kind'        => null,
@@ -261,7 +279,7 @@ class Iban
                     endwhile;
                 }
 
-                /** Reset $substructure */
+                // Reset substructure 
                 $substructure['length']      = 0;
                 $substructure['fixedLength'] = false;
                 $substructure['kind']        = null;
@@ -284,12 +302,12 @@ class Iban
     {
         $ibanArray = str_split($iban);
 
-        /** Move the four initial characters to the end of the string. */
+        // Move the four initial characters to the end of the string.
         for ($i = 0; $i < 4; $i++) {
             array_push($ibanArray,array_shift($ibanArray));
         }
 
-        /** Replace the letters in the string with digits. */
+        // Replace the letters in the string with digits.
         $i = 0;
         foreach ($ibanArray as $ibanElement) {
             if (!is_numeric($ibanElement)) {
@@ -301,15 +319,15 @@ class Iban
 
         $iban = implode($ibanArray);
 
-        /** Calculate */
-        $ibanSlice       = null;          /** Portion of the code to calculate the modulus.            */
-        $ibanSliceIndex  = 0;             /** Position of the next portion to calculate.               */
-        $ibanControlCode = 0;             /** Result of calculation.                                   */
-        $modulus         = 97;            /** Modulus.                                                 */
-        $ibanLength      = strlen($iban); /** Code length calculation pending.                         */
-        $firstIbanSlice  = false;         /** True if modulus has been calculated on the first portion */
+        // Calculate.
+        $ibanSlice       = null;          // Portion of the code to calculate the modulus.
+        $ibanSliceIndex  = 0;             // Position of the next portion to calculate.
+        $ibanControlCode = 0;             // Result of calculation.
+        $modulus         = 97;            // Modulus.
+        $ibanLength      = strlen($iban); // Code length calculation pending.
+        $firstIbanSlice  = false;         // True if modulus has been calculated on the first portion.
 
-        /** Ignore leading zeroes. */
+        // Ignore leading zeroes.
         $i = 0;
         while ($iban[$i] == 0):
             $ibanSliceIndex++;

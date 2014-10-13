@@ -6,7 +6,9 @@
  * @version GIT: $Id$
  */
 
-/** */
+/**
+ * Countries database.
+ */
 require_once('Countries.php');
 
 /**

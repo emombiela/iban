@@ -13,13 +13,17 @@ use Illuminate\Foundation\AliasLoader;
 
 /**
  * Bootstrap classes for Iban package.
+ *
+ * @author  Eduard Mombiela <mombiela.eduard@gmail.com>
+ * @version GIT: $Id$
+ * @package Iban
  */
 class IbanServiceProvider extends ServiceProvider
 {
     /**
      * Indicates if loading of the provider is deferred.
      *
-     * @var bool
+     * @var    boolean
      */
     protected $defer = false;
 
@@ -28,10 +32,10 @@ class IbanServiceProvider extends ServiceProvider
      *
      * @return void
      */
-        public function register()
-        {
-            //
-        }
+    public function register()
+    {
+        //
+    }
 
     /**
      * Get the services provided by the provider.
@@ -45,6 +49,8 @@ class IbanServiceProvider extends ServiceProvider
 
     /**
      * Pass custom namespace to package method.
+     *
+     * @return void
      */
     public function boot()
     {
