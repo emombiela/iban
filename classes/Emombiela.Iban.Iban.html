@@ -242,7 +242,8 @@
                             <div class="row collapse">
                                 <div class="detail-description">
                                     <div class="long_description"><p>This method returns an array with the BBAN calculation algorithm
-implemented.</p></div>
+implemented.<br />
+The key of each element is the country code defined in ISO 3166.</p></div>
 
                                     <table class="table">
                                                                                     <tr>
@@ -287,12 +288,8 @@ implemented.</p></div>
                                             </div>
                                                                             
                                                                             <h3>Response</h3>
-                                        <code>array</code><p><p>array[0] -> error string<br />array[1] -> IBAN code</p>
-<pre><code>               If is null array[0] then:
-                   array[1] = IBAN code
-               else
-                   array[0] = error string
-                   array[1] = null</code></pre></p>
+                                        <code>array</code><p><p>array[0]:null|string = error,<br />
+array[1]:null|string = IBAN code if array[0] is null.</p></p>
                                                                     </div>
                             </div>
 
@@ -524,7 +521,7 @@ in Country class.</p></div>
             Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by
             <a href="http://glyphicons.com/">Glyphicons</a>.<br/>
             Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor </a> and<br/>
-            generated on Thu, 16 Oct 2014 16:53:28 +0200.<br/>
+            generated on Thu, 16 Oct 2014 18:28:46 +0200.<br/>
     </footer>
     </body>
 </html>
