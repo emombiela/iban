@@ -97,7 +97,8 @@ class Iban
      * BBAN countries list.
      *
      * This method returns an array with the BBAN calculation algorithm
-     * implemented.
+     * implemented.<br />
+     * The key of each element is the country code defined in ISO 3166.
      *
      * @return array
      */
@@ -168,13 +169,10 @@ class Iban
      *
      * @param  string $country Country of BBAN code.
      * @param  string $bban    BBAN code.
-     * @return array  array[0] -> error string<br />array[1] -> IBAN code
-     *                    If is null array[0] then:
-     *                        array[1] = IBAN code
-     *                    else
-     *                        array[0] = error string
-     *                        array[1] = null
-     */
+     * @return array
+     * array[0]:null|string = error,<br />
+     * array[1]:null|string = IBAN code if array[0] is null.
+    */
     static function calculate ($country, $bban)
     {
         // Checks if the function reveives a country string.

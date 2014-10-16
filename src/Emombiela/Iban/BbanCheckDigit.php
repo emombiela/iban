@@ -6,12 +6,16 @@
  * @version GIT: $Id$
  */
 
+namespace Emombiela\Iban;
+
 /**
  * Countries with BBAN calculation.
  *
  * Countries with the BBAN calculation algorithm implemented.
  *
  * @return array
+ *
+ * @todo   Prova
  */
 function bbanCountries()
 {
@@ -23,9 +27,10 @@ function bbanCountries()
  *
  * @param  string $country
  * @param  string $bban
- * @return array  (boolean: Exist calculation for the country,
- *                 boolean: Right check digit/s,
- *                 string:  Check digit/s)
+ * @return array
+ * array[0]:boolean = True if exist calculation for the country,<br />
+ * array[1]:boolean = True if right check digit/s,<br />
+ * array[2]:string  = Check digit/s.
  */
 function bbanCheckDigitTest($country, $bban)
 {
