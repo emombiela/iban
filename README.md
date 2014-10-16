@@ -1,4 +1,4 @@
-iban
+IBAN
 ====
 
-IBAN control package for Laravel API Documentation.
+IBAN control package API Documentation.
