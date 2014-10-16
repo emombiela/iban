@@ -1,4 +1,4 @@
 IBAN
 ====
 
-IBAN control package API Documentation.
+IBAN control package API Documentation: http://emombiela.github.io/iban/
