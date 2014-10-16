@@ -74,6 +74,7 @@ class Iban
     static function countriesList()
     {
         $countries = countries();
+        asort($countries);
         return $countries;
     }
 
@@ -88,6 +89,22 @@ class Iban
     static function sepaCountriesList()
     {
         $countries = sepaCountries();
+        asort($countries);
+        return $countries;
+    }
+
+    /**
+     * BBAN countries list.
+     *
+     * This method returns an array with the BBAN calculation algorithm
+     * implemented.
+     *
+     * @return array
+     */
+    static function bbanCountriesList()
+    {
+        $countries = bbanCountries();
+        asort($countries);
         return $countries;
     }
 

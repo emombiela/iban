@@ -7,13 +7,25 @@
  */
 
 /**
+ * Countries with BBAN calculation.
+ *
+ * Countries with the BBAN calculation algorithm implemented.
+ *
+ * @return array
+ */
+function bbanCountries()
+{
+    return array('ES' => 'Spain',);
+}
+
+/**
  * Calculate BBAN check digit/s.
  *
  * @param  string $country
  * @param  string $bban
- * @return array           (boolean: Exist calculation for the country,
- *                          boolean: Right check digit/s,
- *                          string:  Check digit/s)
+ * @return array  (boolean: Exist calculation for the country,
+ *                 boolean: Right check digit/s,
+ *                 string:  Check digit/s)
  */
 function bbanCheckDigitTest($country, $bban)
 {
