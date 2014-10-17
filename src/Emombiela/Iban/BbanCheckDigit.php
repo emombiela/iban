@@ -15,11 +15,16 @@ namespace Emombiela\Iban;
  *
  * @return array
  *
- * @todo   Prova
+ * @todo   If you want to implement the algorithm for calculating the check digits
+ * of the bank account for your country or for a country that you know,
+ * you have to add to the array this function returns the ISO 3166 code
+ * and the country name.
  */
 function bbanCountries()
 {
-    return array('ES' => 'Spain',);
+    return array('ES' => 'Spain',
+                 // Put your country here...
+           );
 }
 
 /**
@@ -31,6 +36,11 @@ function bbanCountries()
  * array[0]:boolean = True if exist calculation for the country,<br />
  * array[1]:boolean = True if right check digit/s,<br />
  * array[2]:string  = Check digit/s.
+ *
+ * @todo   If you want to implement the algorithm for calculating the check digits
+ * of the bank account for your country or for a country that you know,
+ * you have to add it like a switch/case option. Please put all your code
+ * inside your case option including functions.
  */
 function bbanCheckDigitTest($country, $bban)
 {
@@ -81,6 +91,8 @@ function bbanCheckDigitTest($country, $bban)
         }
 
         break;
+
+    // Put your case option here...
 
     default:
         return array(false, false, $bbanCheckDigit);
