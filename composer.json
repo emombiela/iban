@@ -1,12 +1,17 @@
 {
     "name": "emombiela/iban",
-    "description": "",
+    "description": "IBAN package for Laravel",
+    "keywords": ["IBAN","BBAN","calculate","validate","Laravel","Package"],
     "authors": [
         {
             "name": "Eduard Mombiela",
-            "email": "mombiela.eduard@gmail.com"
+            "email": "mombiela.eduard@gmail.com",
+            "homepage": "http://www.emombiela.com",
+            "role": "Developer"
         }
     ],
+    "license": "MIT",
+    "homepage": "https://github.com/emombiela/iban",
     "require": {
         "php": ">=5.4.0",
         "illuminate/support": "4.2.*"
